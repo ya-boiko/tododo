@@ -176,8 +176,8 @@ def scan_file(filepath: str, root: str, context: int = 0) -> list[dict]:
 def main():
     parser = argparse.ArgumentParser(description="Scan project files for TODO comments.")
     parser.add_argument("root", nargs="?", default=".", help="Project root directory")
-    parser.add_argument("--context", type=int, default=0, metavar="N",
-                        help="Show N lines of context around each TODO")
+    parser.add_argument("--context", type=int, default=2, metavar="N",
+                        help="Show N lines of context around each TODO (default: 2)")
     args = parser.parse_args()
 
     root = os.path.abspath(args.root)
