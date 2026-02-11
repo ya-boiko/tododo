@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is `tododo`, a Claude Code plugin that provides the `/tododo` slash command for managing TODO/FIXME/HACK/XXX comments in codebases. Users can list, add, edit, remove, and execute TODO items through Claude.
+This is `tododo`, a Claude Code plugin that provides the `/tododo` slash command for managing TODO/FIXME/HACK/XXX comments in codebases. Users can list, edit, remove, and execute TODO items through Claude.
 
 ## Architecture
 
@@ -15,7 +15,7 @@ The plugin consists of three main components:
 2. **Command Definition** (`commands/tododo.md`):
    - Frontmatter declares allowed tools and argument hints
    - Contains the full prompt that Claude receives when `/tododo` is invoked
-   - Defines the command interface: `list`, `add`, `edit`, `remove`, `run`
+   - Defines the command interface: `list`, `edit`, `remove`, `run`
 
 3. **Scanner Script** (`scripts/scan_todos.py`):
    - Python 3.10+ script that finds TODO comments in project files
@@ -29,7 +29,7 @@ When a user types `/tododo` in a Claude Code conversation:
 1. Claude Code loads `commands/tododo.md` and substitutes `$ARGUMENTS` with the user's input
 2. The entire markdown content becomes the system prompt for that turn
 3. Claude then locates and executes `scan_todos.py` to get the current TODO list
-4. Claude performs the requested operation (list/add/edit/remove/run) using Read/Edit/Write tools
+4. Claude performs the requested operation (list/edit/remove/run) using Read/Edit/Write tools
 
 ## Development Commands
 
@@ -63,13 +63,6 @@ The scanner (`scan_todos.py`) recognizes these comment patterns (case-insensitiv
 - `<!-- -->` → HTML, XML, Vue, Svelte
 - `%` → LaTeX, Erlang
 
-When adding TODOs via `/tododo add`, the command maps file extensions to the correct syntax:
-- `.py`, `.sh`, `.rb`, `.yaml` → `# TODO:`
-- `.js`, `.ts`, `.jsx`, `.tsx`, `.java`, `.c`, `.cpp`, `.go`, `.rs` → `// TODO:`
-- `.sql`, `.lua` → `-- TODO:`
-- `.html`, `.xml`, `.vue`, `.svelte` → `<!-- TODO: -->`
-- Default fallback → `# TODO:`
-
 ## Key Implementation Details
 
 ### Scanner behavior
@@ -81,13 +74,12 @@ When adding TODOs via `/tododo add`, the command maps file extensions to the cor
 
 ### Command execution flow
 1. **Always scan first**: Before any edit/remove operation, run the scanner to get current TODO IDs
-2. **Re-scan after changes**: After add/edit/remove, run scanner again to show updated list
+2. **Re-scan after changes**: After edit/remove, run scanner again to show updated list
 3. **Context for `run`**: Use `--context 5` when executing TODOs so Claude has surrounding code
 4. **Sequential edits for `run`**: Re-read files between TODO implementations to account for line number shifts
 
 ### File modification rules
 - Use Edit tool, not sed/awk/manual rewrites
-- Match indentation of surrounding code when adding TODOs
 - Preserve comment style when editing
 - Remove entire line if it contains only the TODO comment; remove only the comment if it's inline
 

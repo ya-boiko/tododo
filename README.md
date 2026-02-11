@@ -5,7 +5,6 @@ Slash command for Claude Code that manages TODO/FIXME/HACK/XXX comments in your 
 ## Features
 
 - **`/tododo`** or **`/tododo list`** — scan and display all TODO comments
-- **`/tododo add <file>:<line> <text>`** — add a TODO comment with correct syntax for the file type
 - **`/tododo edit <id> <new text>`** — edit an existing TODO by ID
 - **`/tododo remove <id>`** — remove a TODO by ID
 - **`/tododo run [id...]`** — execute (implement) TODO items and remove the comment after completion
@@ -40,6 +39,34 @@ ln -s ../../.claude-plugins/tododo/commands/tododo.md .claude/commands/tododo.md
 ln -s /path/to/tododo/commands/tododo.md ~/.claude/commands/tododo.md
 ```
 
+## Updating
+
+To update the plugin to the latest version:
+
+```bash
+# Update the submodule to the latest commit
+cd .claude-plugins/tododo
+git pull origin master
+cd ../..
+
+# Or update all submodules at once from project root
+git submodule update --remote .claude-plugins/tododo
+```
+
+## Uninstalling
+
+To remove the plugin from your project:
+
+```bash
+# Remove the command symlink
+rm .claude/commands/tododo.md
+
+# Remove the submodule
+git submodule deinit -f .claude-plugins/tododo
+git rm -f .claude-plugins/tododo
+rm -rf .git/modules/.claude-plugins/tododo
+```
+
 ## Requirements
 
 - Python 3.10+
@@ -47,4 +74,4 @@ ln -s /path/to/tododo/commands/tododo.md ~/.claude/commands/tododo.md
 
 ## How it works
 
-The scanner (`scripts/scan_todos.py`) recursively walks project files respecting `.gitignore`, finds TODO/FIXME/HACK/XXX in common comment formats, and outputs a numbered list. Claude uses this list to perform add/edit/remove operations via the Edit tool.
+The scanner (`scripts/scan_todos.py`) recursively walks project files respecting `.gitignore`, finds TODO/FIXME/HACK/XXX in common comment formats, and outputs a numbered list. Claude uses this list to perform edit/remove operations via the Edit tool.

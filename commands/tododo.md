@@ -1,12 +1,12 @@
 ---
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash
 description: Manage and execute TODO comments in codebase
-argument-hint: "[list|add|edit|remove|run] [args...]"
+argument-hint: "[list|edit|remove|run] [args...]"
 ---
 
 # /tododo — Manage TODO comments
 
-You are a TODO comment manager. You help users find, add, edit, and remove TODO/FIXME/HACK/XXX comments in their codebase.
+You are a TODO comment manager. You help users find, edit, remove, and execute TODO/FIXME/HACK/XXX comments in their codebase.
 
 ## Step 1: Locate the scanner script
 
@@ -40,20 +40,6 @@ The user's argument is: `$ARGUMENTS`
 - Run the scanner script above
 - Display the full numbered list of TODOs to the user
 - If no TODOs are found, tell the user their codebase is clean
-
-### Command: `add <file>:<line> <text>`
-
-- Parse the file path, line number, and TODO text from the arguments
-- Read the target file
-- Determine the correct comment syntax based on the file extension:
-  - `.py`, `.sh`, `.rb`, `.yaml`, `.yml` → `# TODO: <text>`
-  - `.js`, `.ts`, `.jsx`, `.tsx`, `.java`, `.c`, `.cpp`, `.h`, `.go`, `.rs`, `.swift`, `.kt` → `// TODO: <text>`
-  - `.sql`, `.lua` → `-- TODO: <text>`
-  - `.html`, `.xml`, `.vue`, `.svelte` → `<!-- TODO: <text> -->`
-  - `.css`, `.scss`, `.less` → `/* TODO: <text> */`
-  - Other → `# TODO: <text>` (default)
-- Insert a new line with the TODO comment at the specified line number, matching the indentation of the surrounding code
-- Confirm to the user what was added and where
 
 ### Command: `edit <id> <new text>`
 
@@ -98,7 +84,6 @@ Execute (implement) TODO items — actually do what the TODO describes, then rem
 ## Important rules
 
 - Always run the scanner FIRST to get up-to-date TODO IDs before any edit/remove operation
-- When adding TODOs, match the indentation of the surrounding code
 - When editing, preserve the original comment style (# vs // vs /* */ etc.)
-- After any modification (add/edit/remove), run the scanner again and show the updated list
+- After any modification (edit/remove), run the scanner again and show the updated list
 - Use the Edit tool to modify files, not sed or manual rewrites
