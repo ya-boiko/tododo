@@ -18,11 +18,11 @@ Supports comment styles: `#`, `//`, `/* */`, `--`, `<!-- -->` and more.
 
 ```bash
 # From your project root:
-git submodule add git@github-personal.com:ya-boiko/cc_todos.git .claude-plugins/todos
+git submodule add git@github.com:ya-boiko/tododo.git .claude-plugins/tododo
 
 # Link the command:
 mkdir -p .claude/commands
-ln -s ../../.claude-plugins/todos/commands/tododo.md .claude/commands/tododo.md
+ln -s ../../.claude-plugins/tododo/commands/tododo.md .claude/commands/tododo.md
 ```
 
 ### For cloning projects with this submodule
@@ -30,14 +30,14 @@ ln -s ../../.claude-plugins/todos/commands/tododo.md .claude/commands/tododo.md
 ```bash
 git submodule update --init
 mkdir -p .claude/commands
-ln -s ../../.claude-plugins/todos/commands/tododo.md .claude/commands/tododo.md
+ln -s ../../.claude-plugins/tododo/commands/tododo.md .claude/commands/tododo.md
 ```
 
 ### Manual (user-global)
 
 ```bash
 # Available in all projects:
-ln -s /path/to/cc_todos/commands/tododo.md ~/.claude/commands/tododo.md
+ln -s /path/to/tododo/commands/tododo.md ~/.claude/commands/tododo.md
 ```
 
 ## Requirements
