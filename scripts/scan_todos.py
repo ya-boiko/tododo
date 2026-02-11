@@ -17,6 +17,8 @@ import sys
 # Directories and files to always skip
 SKIP_DIRS = {
     ".git",
+    ".claude",
+    ".claude-plugins",
     "node_modules",
     "__pycache__",
     ".venv",
@@ -31,6 +33,12 @@ SKIP_DIRS = {
     "vendor",
     ".bundle",
     "target",
+}
+
+# Specific files to skip (documentation, etc.)
+SKIP_FILES = {
+    "CLAUDE.md",
+    "README.md",
 }
 
 # Binary-looking extensions to skip
@@ -92,6 +100,17 @@ def should_skip_file(filepath: str) -> bool:
     return ext.lower() in BINARY_EXTENSIONS
 
 
+def should_skip_path(filepath: str) -> bool:
+    """Check if a file path contains any skip directories or filenames."""
+    path_parts = filepath.split(os.sep)
+    # Check if any directory in the path should be skipped
+    if any(part in SKIP_DIRS for part in path_parts):
+        return True
+    # Check if the filename itself should be skipped
+    filename = os.path.basename(filepath)
+    return filename in SKIP_FILES
+
+
 def walk_files(root: str):
     """Yield file paths, skipping ignored directories and binary files."""
     git_files = get_git_tracked_files(root)
@@ -99,7 +118,7 @@ def walk_files(root: str):
     if git_files is not None:
         # Git repo: use tracked + untracked (non-ignored) files
         for filepath in sorted(git_files):
-            if not should_skip_file(filepath) and os.path.isfile(filepath):
+            if not should_skip_file(filepath) and not should_skip_path(filepath) and os.path.isfile(filepath):
                 yield filepath
     else:
         # Not a git repo: walk manually, skipping known dirs
