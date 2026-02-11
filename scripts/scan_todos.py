@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Scan project files for TODO comments, respecting .gitignore."""
 
+# TODO: Installation as git submodule:
+#   1. git submodule add <repo-url> .claude-plugins/tododo
+#   2. mkdir -p .claude/commands
+#   3. ln -s ../../.claude-plugins/tododo/commands/tododo.md .claude/commands/tododo.md
+#   After that /tododo command will be available in Claude Code.
+#   For cloning: git submodule update --init
+
+import argparse
 import os
 import re
 import subprocess
@@ -109,27 +117,51 @@ def walk_files(root: str):
                     yield filepath
 
 
-def scan_file(filepath: str, root: str) -> list[tuple[str, int, str, str]]:
-    """Scan a single file for TODO comments. Returns list of (relpath, line_no, keyword, text)."""
+def scan_file(filepath: str, root: str, context: int = 0) -> list[dict]:
+    """Scan a single file for TODO comments.
+
+    Returns list of dicts with keys: relpath, line_no, keyword, text,
+    and optionally context_lines (list of (line_no, line_text) pairs).
+    """
     results = []
     try:
         with open(filepath, "r", encoding="utf-8", errors="replace") as f:
-            for line_no, line in enumerate(f, start=1):
-                match = TODO_PATTERN.search(line)
-                if match:
-                    keyword = match.group(1).upper()
-                    text = match.group(2).strip()
-                    # Strip trailing comment closers
-                    text = re.sub(r"\s*(\*/|-->|-\})\s*$", "", text)
-                    relpath = os.path.relpath(filepath, root)
-                    results.append((relpath, line_no, keyword, text))
+            lines = f.readlines()
+
+        for line_no_0, line in enumerate(lines):
+            match = TODO_PATTERN.search(line)
+            if match:
+                keyword = match.group(1).upper()
+                text = match.group(2).strip()
+                text = re.sub(r"\s*(\*/|-->|-\})\s*$", "", text)
+                relpath = os.path.relpath(filepath, root)
+                entry = {
+                    "relpath": relpath,
+                    "line_no": line_no_0 + 1,
+                    "keyword": keyword,
+                    "text": text,
+                }
+                if context > 0:
+                    start = max(0, line_no_0 - context)
+                    end = min(len(lines), line_no_0 + context + 1)
+                    ctx = []
+                    for i in range(start, end):
+                        ctx.append((i + 1, lines[i].rstrip("\n")))
+                    entry["context_lines"] = ctx
+                results.append(entry)
     except (OSError, UnicodeDecodeError):
         pass
     return results
 
 
 def main():
-    root = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")
+    parser = argparse.ArgumentParser(description="Scan project files for TODO comments.")
+    parser.add_argument("root", nargs="?", default=".", help="Project root directory")
+    parser.add_argument("--context", type=int, default=0, metavar="N",
+                        help="Show N lines of context around each TODO")
+    args = parser.parse_args()
+
+    root = os.path.abspath(args.root)
 
     if not os.path.isdir(root):
         print(f"Error: '{root}' is not a directory", file=sys.stderr)
@@ -137,19 +169,25 @@ def main():
 
     todos = []
     for filepath in walk_files(root):
-        todos.extend(scan_file(filepath, root))
+        todos.extend(scan_file(filepath, root, context=args.context))
 
     if not todos:
         print("No TODO comments found.")
         return
 
-    # Print with sequential IDs
-    for idx, (relpath, line_no, keyword, text) in enumerate(todos, start=1):
+    for idx, todo in enumerate(todos, start=1):
+        keyword = todo["keyword"]
         label = keyword if keyword != "TODO" else "TODO"
-        if text:
-            print(f"[{idx}] {relpath}:{line_no} — {label}: {text}")
+        if todo["text"]:
+            print(f"[{idx}] {todo['relpath']}:{todo['line_no']} — {label}: {todo['text']}")
         else:
-            print(f"[{idx}] {relpath}:{line_no} — {label}")
+            print(f"[{idx}] {todo['relpath']}:{todo['line_no']} — {label}")
+
+        if "context_lines" in todo:
+            for ctx_line_no, ctx_text in todo["context_lines"]:
+                marker = ">" if ctx_line_no == todo["line_no"] else " "
+                print(f"    |{marker} {ctx_line_no}: {ctx_text}")
+            print()
 
 
 if __name__ == "__main__":

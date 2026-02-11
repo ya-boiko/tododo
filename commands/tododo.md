@@ -1,10 +1,10 @@
 ---
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash
-description: Manage TODO comments in codebase
-argument-hint: "[list|add|edit|remove] [args...]"
+description: Manage and execute TODO comments in codebase
+argument-hint: "[list|add|edit|remove|run] [args...]"
 ---
 
-# /todos — Manage TODO comments
+# /tododo — Manage TODO comments
 
 You are a TODO comment manager. You help users find, add, edit, and remove TODO/FIXME/HACK/XXX comments in their codebase.
 
@@ -70,6 +70,30 @@ The user's argument is: `$ARGUMENTS`
 - Read the file containing that TODO
 - Remove the TODO comment. If the line contains ONLY the TODO comment (possibly with whitespace), remove the entire line. If the TODO is inline after code, remove only the TODO part
 - Confirm the removal to the user
+
+### Command: `run [id...]`
+
+Execute (implement) TODO items — actually do what the TODO describes, then remove the comment.
+
+1. Run the scanner with `--context 5` to get TODOs with surrounding code:
+   ```
+   python3 <path_to_scan_todos.py> --context 5 .
+   ```
+2. If specific IDs are provided (e.g. `run 1 3`), select only those TODOs
+3. If NO IDs are provided, display the list with context and ask the user which TODOs to execute (use AskUserQuestion or let the user type IDs)
+4. For each selected TODO, in order:
+   a. Read the full file containing the TODO for complete context
+   b. Implement what the TODO comment describes — write the actual code/change requested
+   c. After successful implementation, remove the TODO comment line (if the line is only the comment, delete the entire line; if inline, remove just the TODO part)
+5. After all selected TODOs are processed, run the scanner again and show a summary:
+   - Which TODOs were implemented
+   - Files that were modified
+   - The updated TODO list
+
+**Important for `run`:**
+- Implement TODOs one at a time, re-reading the file before each to account for line shifts from prior edits
+- If a TODO is unclear or too vague to implement safely, skip it and tell the user
+- Use Edit tool to make changes, not manual rewrites
 
 ## Important rules
 
