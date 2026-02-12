@@ -43,14 +43,56 @@ SKIP_FILES = {
 
 # Binary-looking extensions to skip
 BINARY_EXTENSIONS = {
-    ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico", ".svg", ".webp",
-    ".mp3", ".mp4", ".avi", ".mov", ".mkv", ".flac", ".wav", ".ogg",
-    ".zip", ".tar", ".gz", ".bz2", ".xz", ".7z", ".rar",
-    ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
-    ".exe", ".dll", ".so", ".dylib", ".o", ".a", ".class", ".jar",
-    ".woff", ".woff2", ".ttf", ".eot", ".otf",
-    ".pyc", ".pyo", ".wasm", ".bin",
-    ".sqlite", ".db", ".sqlite3",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".bmp",
+    ".ico",
+    ".svg",
+    ".webp",
+    ".mp3",
+    ".mp4",
+    ".avi",
+    ".mov",
+    ".mkv",
+    ".flac",
+    ".wav",
+    ".ogg",
+    ".zip",
+    ".tar",
+    ".gz",
+    ".bz2",
+    ".xz",
+    ".7z",
+    ".rar",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".ppt",
+    ".pptx",
+    ".exe",
+    ".dll",
+    ".so",
+    ".dylib",
+    ".o",
+    ".a",
+    ".class",
+    ".jar",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".eot",
+    ".otf",
+    ".pyc",
+    ".pyo",
+    ".wasm",
+    ".bin",
+    ".sqlite",
+    ".db",
+    ".sqlite3",
     ".lock",
 }
 
@@ -118,16 +160,17 @@ def walk_files(root: str):
     if git_files is not None:
         # Git repo: use tracked + untracked (non-ignored) files
         for filepath in sorted(git_files):
-            if not should_skip_file(filepath) and not should_skip_path(filepath) and os.path.isfile(filepath):
+            if (
+                not should_skip_file(filepath)
+                and not should_skip_path(filepath)
+                and os.path.isfile(filepath)
+            ):
                 yield filepath
     else:
         # Not a git repo: walk manually, skipping known dirs
         for dirpath, dirnames, filenames in os.walk(root):
             # Prune ignored directories (modifying dirnames in-place)
-            dirnames[:] = [
-                d for d in dirnames
-                if d not in SKIP_DIRS and not d.startswith(".")
-            ]
+            dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS and not d.startswith(".")]
             dirnames.sort()
 
             for filename in sorted(filenames):
@@ -144,7 +187,7 @@ def scan_file(filepath: str, root: str, context: int = 0) -> list[dict]:
     """
     results = []
     try:
-        with open(filepath, "r", encoding="utf-8", errors="replace") as f:
+        with open(filepath, encoding="utf-8", errors="replace") as f:
             lines = f.readlines()
 
         for line_no_0, line in enumerate(lines):
@@ -176,8 +219,13 @@ def scan_file(filepath: str, root: str, context: int = 0) -> list[dict]:
 def main():
     parser = argparse.ArgumentParser(description="Scan project files for TODO comments.")
     parser.add_argument("root", nargs="?", default=".", help="Project root directory")
-    parser.add_argument("--context", type=int, default=2, metavar="N",
-                        help="Show N lines of context around each TODO (default: 2)")
+    parser.add_argument(
+        "--context",
+        type=int,
+        default=2,
+        metavar="N",
+        help="Show N lines of context around each TODO (default: 2)",
+    )
     args = parser.parse_args()
 
     root = os.path.abspath(args.root)
