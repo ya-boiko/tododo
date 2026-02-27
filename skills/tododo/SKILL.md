@@ -1,11 +1,11 @@
 ---
 name: tododo
-description: This skill should be used when the user asks to "show TODOs", "list TODO comments", "find all TODOs", "edit a TODO", "fix a TODO", "remove a TODO", "run TODO #N", "implement a TODO", or mentions managing TODO/FIXME/HACK/XXX comments in their codebase.
+description: This skill should be used when the user asks to "show TODOs", "list TODO comments", "find all TODOs", "edit a TODO", "fix a TODO", "remove a TODO", "run TODO #N", "implement a TODO", "explore TODO #N", "analyze TODOs", "clarify TODOs", or mentions managing TODO/FIXME/HACK/XXX comments in their codebase.
 ---
 
 # Tododo — TODO Comment Manager
 
-Manage TODO/FIXME/HACK/XXX comments across a codebase: list them by number, edit their text, remove them, and execute (implement) what they describe. Uses a bundled Python scanner that finds all TODO-style comments while respecting `.gitignore`.
+Manage TODO/FIXME/HACK/XXX comments across a codebase: list them by number, edit their text, remove them, explore and clarify them, and execute (implement) what they describe. Uses a bundled Python scanner that finds all TODO-style comments while respecting `.gitignore`.
 
 ## Scanner
 
@@ -107,6 +107,29 @@ Implement what a TODO describes, then remove the comment once done.
    - Updated TODO list
 
 Skip any TODO that is too vague to implement safely; report which were skipped and why.
+
+### explore `[id...]`
+
+Analyze TODOs, ask clarifying questions for vague ones, then rewrite their text with a concrete implementation plan. Use before `run` to make vague TODOs actionable.
+
+1. Scan with `--context 5`
+2. Select TODOs to explore:
+   - IDs provided (e.g. `explore 1 3`) → work only on those
+   - No IDs → explore all
+3. For each selected TODO:
+   a. Read the full file to understand surrounding code
+   b. Assess clarity: is the intent unambiguous? is there enough context to implement without guessing?
+   c. If vague or ambiguous — ask the user one focused clarifying question before proceeding
+   d. Formulate a concrete implementation plan based on the code and user answers
+   e. Rewrite the TODO text in the code to embed the plan: what exactly needs to be done, relevant details from the codebase
+   f. Re-read the file before the next TODO in the same file
+4. Show a summary of updated TODOs and the new TODO list
+
+**Goal:** after `explore`, every TODO must be specific enough that `run` can implement it without questions.
+
+**Rewriting style:** keep the comment concise but actionable:
+- Before: `# TODO: fix parsing`
+- After: `# TODO: fix parsing — handle empty string input in parse_query(); currently raises KeyError on line 47`
 
 ## Rules
 

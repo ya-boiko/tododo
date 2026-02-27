@@ -1,7 +1,7 @@
 ---
 allowed-tools: Read, Edit, Write, Grep, Glob, Bash
 description: Manage and execute TODO comments in codebase
-argument-hint: "[list|edit|remove|run] [args...]"
+argument-hint: "[list|edit|remove|run|explore] [args...]"
 ---
 
 # /tododo — Manage TODO comments
@@ -69,6 +69,31 @@ Execute (implement) TODO items — do what the TODO describes, then remove the c
 4. Re-scan and show a summary: which TODOs were implemented, files modified, updated list
 
 Skip any TODO that is too vague to implement safely.
+
+### `explore [id...]`
+
+Analyze TODOs, ask clarifying questions for vague ones, and rewrite their text with a concrete implementation plan.
+
+1. Scan with `--context 5`
+2. Select TODOs to explore:
+   - IDs provided (e.g. `explore 1 3`) → work only on those
+   - No IDs → explore all
+3. For each selected TODO, in order:
+   a. Read the full file to understand the surrounding code
+   b. Assess the TODO: Is the intent clear? Is there enough context to implement it?
+   c. If the TODO is vague or ambiguous — ask the user a focused clarifying question before proceeding
+   d. Formulate a concrete, step-by-step implementation plan for this TODO
+   e. Rewrite the TODO text in the code to include the plan: what exactly needs to be done, any relevant details or constraints discovered from the code
+   f. Re-read the file before the next TODO (line numbers shift after each edit)
+4. After all selected TODOs are processed, show a summary:
+   - Which TODOs were updated
+   - The updated TODO list
+
+**Goal:** after `explore`, every TODO should be specific enough that `run` can implement it without asking any questions.
+
+**Rewriting style:** keep the comment concise but actionable. Example:
+- Before: `# TODO: fix parsing`
+- After: `# TODO: fix parsing — handle empty string input in parse_query(); currently raises KeyError on line 47`
 
 ## Rules
 
