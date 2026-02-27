@@ -1,6 +1,6 @@
 # /tododo — TODO Manager for Claude Code
 
-Slash command for Claude Code that manages TODO/FIXME/HACK/XXX comments in your codebase.
+Slash command and skill for Claude Code that manages TODO/FIXME/HACK/XXX comments in your codebase.
 
 ## Features
 
@@ -9,62 +9,53 @@ Slash command for Claude Code that manages TODO/FIXME/HACK/XXX comments in your 
 - **`/tododo remove <id>`** — remove a TODO by ID
 - **`/tododo run [id...]`** — execute (implement) TODO items and remove the comment after completion
 
+Also works as a **skill** — Claude automatically manages TODOs when you ask without the explicit command.
+
 Supports comment styles: `#`, `//`, `/* */`, `--`, `<!-- -->` and more.
 
 ## Installation
 
-### As a git submodule
+### Global (recommended)
+
+Install once, works in every project:
 
 ```bash
-# From your project root:
-git submodule add git@github.com:ya-boiko/tododo.git .claude-plugins/tododo
-
-# Link the command:
-mkdir -p .claude/commands
-ln -s ../../.claude-plugins/tododo/commands/tododo.md .claude/commands/tododo.md
+git clone https://github.com/ya-boiko/tododo.git ~/.claude-plugins/tododo
+cd ~/.claude-plugins/tododo && ./install.sh
 ```
 
-### For cloning projects with this submodule
+### Per-project (git submodule)
+
+Use when you want the plugin versioned alongside a specific project:
+
+```bash
+git submodule add https://github.com/ya-boiko/tododo.git .claude-plugins/tododo
+cd .claude-plugins/tododo && ./install.sh
+```
+
+For teammates cloning the project:
 
 ```bash
 git submodule update --init
-mkdir -p .claude/commands
-ln -s ../../.claude-plugins/tododo/commands/tododo.md .claude/commands/tododo.md
-```
-
-### Manual (user-global)
-
-```bash
-# Available in all projects:
-ln -s /path/to/tododo/commands/tododo.md ~/.claude/commands/tododo.md
+cd .claude-plugins/tododo && ./install.sh
 ```
 
 ## Updating
 
-To update the plugin to the latest version:
+```bash
+cd ~/.claude-plugins/tododo && ./update.sh
+```
+
+For a submodule:
 
 ```bash
-# Update the submodule to the latest commit
-cd .claude-plugins/tododo
-git pull origin master
-cd ../..
-
-# Or update all submodules at once from project root
 git submodule update --remote .claude-plugins/tododo
 ```
 
 ## Uninstalling
 
-To remove the plugin from your project:
-
 ```bash
-# Remove the command symlink
-rm .claude/commands/tododo.md
-
-# Remove the submodule
-git submodule deinit -f .claude-plugins/tododo
-git rm -f .claude-plugins/tododo
-rm -rf .git/modules/.claude-plugins/tododo
+cd ~/.claude-plugins/tododo && ./uninstall.sh
 ```
 
 ## Requirements
@@ -74,4 +65,4 @@ rm -rf .git/modules/.claude-plugins/tododo
 
 ## How it works
 
-The scanner (`scripts/scan_todos.py`) recursively walks project files respecting `.gitignore`, finds TODO/FIXME/HACK/XXX in common comment formats, and outputs a numbered list. Claude uses this list to perform edit/remove operations via the Edit tool.
+The scanner (`scripts/scan_todos.py`) walks project files respecting `.gitignore`, finds TODO/FIXME/HACK/XXX in common comment formats, and outputs a numbered list. Claude uses this list to perform edit/remove/run operations via the Edit tool.
