@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Conventions
+
+- **Language**: Python 3.10+ only
+- **Dependencies**: stdlib only — no pip, no venv, no external packages
+- **Commits**: conventional commits format (`feat:`, `fix:`, `refactor:`, `style:`, `docs:`)
+- **Never** add `Co-authored-by` to commits
+- **Testing**: no test framework — verify changes by running `python3 scripts/scan_todos.py .` directly
+- **File edits**: always use the Edit tool, never sed/awk/manual rewrites
+- **Config**: `.claude/` is gitignored — local settings are never committed
+
 ## Project Overview
 
 This is `tododo`, a Claude Code plugin that provides the `/tododo` slash command for managing TODO/FIXME/HACK/XXX comments in codebases. Users can list, edit, remove, and execute TODO items through Claude.
@@ -83,15 +93,43 @@ The scanner (`scan_todos.py`) recognizes these comment patterns (case-insensitiv
 - Preserve comment style when editing
 - Remove entire line if it contains only the TODO comment; remove only the comment if it's inline
 
-## Installation Usage
+## Installation
 
-Users install this plugin in their projects via:
+### Global install (recommended — works in every project)
+
 ```bash
-# As submodule (recommended for project-specific)
+git clone <repo-url> ~/.claude-plugins/tododo
+cd ~/.claude-plugins/tododo && ./install.sh
+```
+
+This symlinks the command and skill into `~/.claude/` so `/tododo` and the
+skill are available in all Claude Code sessions.
+
+**Update:** `cd ~/.claude-plugins/tododo && ./update.sh`
+**Uninstall:** `cd ~/.claude-plugins/tododo && ./uninstall.sh`
+
+### Per-project install (git submodule)
+
+Use when you want the plugin versioned alongside a specific project:
+
+```bash
 git submodule add <repo-url> .claude-plugins/tododo
+cd .claude-plugins/tododo && ./install.sh   # installs globally from submodule path
+```
+
+Or manually link into the project only:
+
+```bash
 mkdir -p .claude/commands
 ln -s ../../.claude-plugins/tododo/commands/tododo.md .claude/commands/tododo.md
-
-# Or globally for user
-ln -s /path/to/tododo/commands/tododo.md ~/.claude/commands/tododo.md
+ln -s ../../.claude-plugins/tododo/skills/tododo .claude/skills/tododo
 ```
+
+Update a submodule: `git submodule update --remote .claude-plugins/tododo`
+
+### What gets installed
+
+| Path | Purpose |
+|------|---------|
+| `~/.claude/commands/tododo.md` | `/tododo` slash command |
+| `~/.claude/skills/tododo/` | Auto-triggered skill |

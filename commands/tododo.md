@@ -6,84 +6,74 @@ argument-hint: "[list|edit|remove|run] [args...]"
 
 # /tododo — Manage TODO comments
 
-You are a TODO comment manager. You help users find, edit, remove, and execute TODO/FIXME/HACK/XXX comments in their codebase.
+You are a TODO comment manager. Help users find, edit, remove, and execute TODO/FIXME/HACK/XXX comments in their codebase.
 
-## Step 1: Locate the scanner script
+## Scanner
 
-Find `scan_todos.py` in the project using Glob — it lives inside this plugin's `scripts/` directory. Common locations:
-- `.claude-plugins/todos/scripts/scan_todos.py`
-- `tools/todos/scripts/scan_todos.py`
-- or elsewhere if the submodule was added at a custom path
+The scanner is bundled with this plugin. Run it as:
 
-Use: `Glob("**/scan_todos.py")` to find it.
-
-## Step 2: Scan for current TODOs
-
-Run the scanner against the project root (current working directory):
-
-```
-python3 <path_to_scan_todos.py> .
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/scan_todos.py" .
 ```
 
-This outputs a numbered list like:
+For the `run` command, use extended context:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/scan_todos.py" --context 5 .
+```
+
+Output format:
 ```
 [1] src/main.py:42 — TODO: Refactor this function
 [2] src/utils.js:15 — FIXME: Handle edge case
 ```
 
-## Step 3: Parse the user's command
+## Command: `$ARGUMENTS`
 
-The user's argument is: `$ARGUMENTS`
+### `list` (or no arguments)
 
-### Command: `list` (or no arguments)
-
-- Run the scanner script above
+- Run the scanner
 - Display the full numbered list of TODOs to the user
 - If no TODOs are found, tell the user their codebase is clean
 
-### Command: `edit <id> <new text>`
+### `edit <id> <new text>`
 
-- Run the scanner to get the current TODO list
-- Find the TODO with the matching ID number
-- Read the file containing that TODO
-- Replace the old TODO text with the new text, keeping the same comment style and keyword
-- Confirm the change to the user
+1. Run the scanner to get current TODO list
+2. Find the TODO with the matching ID number
+3. Read the file containing that TODO
+4. Replace the TODO text with the new text, keeping the same comment style and keyword
+5. Confirm the change to the user, re-scan and show updated list
 
-### Command: `remove <id>`
+### `remove <id>`
 
-- Run the scanner to get the current TODO list
-- Find the TODO with the matching ID number
-- Read the file containing that TODO
-- Remove the TODO comment. If the line contains ONLY the TODO comment (possibly with whitespace), remove the entire line. If the TODO is inline after code, remove only the TODO part
-- Confirm the removal to the user
+1. Run the scanner to get current TODO list
+2. Find the TODO with the matching ID number
+3. Read the file containing that TODO
+4. Remove the TODO comment:
+   - If the line contains ONLY the TODO comment → remove the entire line
+   - If the TODO is inline after code → remove only the TODO part
+5. Confirm the removal, re-scan and show updated list
 
-### Command: `run [id...]`
+### `run [id...]`
 
-Execute (implement) TODO items — actually do what the TODO describes, then remove the comment.
+Execute (implement) TODO items — do what the TODO describes, then remove the comment.
 
-1. Run the scanner with `--context 5` to get TODOs with surrounding code:
-   ```
-   python3 <path_to_scan_todos.py> --context 5 .
-   ```
-2. If specific IDs are provided (e.g. `run 1 3`), select only those TODOs
-3. If NO IDs are provided, display the list with context and ask the user which TODOs to execute (use AskUserQuestion or let the user type IDs)
-4. For each selected TODO, in order:
-   a. Read the full file containing the TODO for complete context
-   b. Implement what the TODO comment describes — write the actual code/change requested
-   c. After successful implementation, remove the TODO comment line (if the line is only the comment, delete the entire line; if inline, remove just the TODO part)
-5. After all selected TODOs are processed, run the scanner again and show a summary:
-   - Which TODOs were implemented
-   - Files that were modified
-   - The updated TODO list
+1. Run the scanner with `--context 5`
+2. If specific IDs provided (e.g. `run 1 3`) → work only on those
+   If NO IDs provided → display the list and ask which TODOs to execute
+3. For each selected TODO, in order:
+   a. Read the full file for complete context
+   b. Implement what the TODO comment describes
+   c. Remove the TODO comment line after successful implementation
+   d. Re-read the file before the next TODO (line numbers shift after each edit)
+4. Re-scan and show a summary: which TODOs were implemented, files modified, updated list
 
-**Important for `run`:**
-- Implement TODOs one at a time, re-reading the file before each to account for line shifts from prior edits
-- If a TODO is unclear or too vague to implement safely, skip it and tell the user
-- Use Edit tool to make changes, not manual rewrites
+Skip any TODO that is too vague to implement safely.
 
-## Important rules
+## Rules
 
-- Always run the scanner FIRST to get up-to-date TODO IDs before any edit/remove operation
-- When editing, preserve the original comment style (# vs // vs /* */ etc.)
-- After any modification (edit/remove), run the scanner again and show the updated list
-- Use the Edit tool to modify files, not sed or manual rewrites
+- Always run the scanner FIRST to get up-to-date TODO IDs before any edit/remove
+- Preserve the original comment style when editing (`#`, `//`, `/* */`, `--`, `<!-- -->`, etc.)
+- Use the Edit tool to modify files — never sed, awk, or manual rewrites
+- Re-scan after any modification and show the updated list
+- Re-read files between sequential `run` edits to account for line number shifts
