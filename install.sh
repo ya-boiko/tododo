@@ -18,6 +18,9 @@ echo "  command → ${COMMANDS_DIR}/tododo.md"
 ln -sf "${SCRIPT_DIR}/skills/tododo" "${SKILLS_DIR}/tododo"
 echo "  skill   → ${SKILLS_DIR}/tododo"
 
+echo "${SCRIPT_DIR}" > "${HOME}/.claude/tododo_root"
+echo "  root    → ${HOME}/.claude/tododo_root"
+
 echo ""
 echo "Done. /tododo is now available in all Claude Code sessions."
 echo "To update: cd '${SCRIPT_DIR}' && git pull"

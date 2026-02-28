@@ -10,16 +10,18 @@ You are a TODO comment manager. Help users find, edit, remove, and execute TODO/
 
 ## Scanner
 
-The scanner is bundled with this plugin. Run it as:
+The scanner path is stored in `~/.claude/tododo_root` by the installer. Always resolve it via Bash before running:
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/scan_todos.py" .
+TODODO_ROOT=$(cat ~/.claude/tododo_root)
+python3 "$TODODO_ROOT/scripts/scan_todos.py" .
 ```
 
-For the `run` command, use extended context:
+For the `run` and `explore` commands, use extended context:
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/scan_todos.py" --context 5 .
+TODODO_ROOT=$(cat ~/.claude/tododo_root)
+python3 "$TODODO_ROOT/scripts/scan_todos.py" --context 5 .
 ```
 
 Output format:

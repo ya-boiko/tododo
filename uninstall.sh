@@ -17,4 +17,9 @@ if [ -L "${SKILLS_DIR}/tododo" ]; then
     echo "  removed skill"
 fi
 
+if [ -f "${HOME}/.claude/tododo_root" ]; then
+    rm "${HOME}/.claude/tododo_root"
+    echo "  removed root config"
+fi
+
 echo "Done."
