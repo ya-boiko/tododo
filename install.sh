@@ -12,10 +12,12 @@ echo "Installing tododo..."
 
 mkdir -p "$COMMANDS_DIR" "$SKILLS_DIR"
 
-ln -sf "${SCRIPT_DIR}/commands/tododo.md" "${COMMANDS_DIR}/tododo.md"
+rm -f "${COMMANDS_DIR}/tododo.md"
+ln -s "${SCRIPT_DIR}/commands/tododo.md" "${COMMANDS_DIR}/tododo.md"
 echo "  command → ${COMMANDS_DIR}/tododo.md"
 
-ln -sf "${SCRIPT_DIR}/skills/tododo" "${SKILLS_DIR}/tododo"
+rm -f "${SKILLS_DIR}/tododo"
+ln -s "${SCRIPT_DIR}/skills/tododo" "${SKILLS_DIR}/tododo"
 echo "  skill   → ${SKILLS_DIR}/tododo"
 
 echo "${SCRIPT_DIR}" > "${HOME}/.claude/tododo_root"
