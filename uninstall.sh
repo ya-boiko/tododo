@@ -22,4 +22,10 @@ if [ -f "${HOME}/.claude/tododo_root" ]; then
     echo "  removed root config"
 fi
 
+if [ -L "${HOME}/.claude/scripts/tododo/scan_todos.py" ]; then
+    rm "${HOME}/.claude/scripts/tododo/scan_todos.py"
+    rmdir --ignore-fail-on-non-empty "${HOME}/.claude/scripts/tododo"
+    echo "  removed scanner"
+fi
+
 echo "Done."

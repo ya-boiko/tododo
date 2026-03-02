@@ -9,18 +9,16 @@ Manage TODO/FIXME/HACK/XXX comments across a codebase: list them by number, edit
 
 ## Scanner
 
-The plugin root path is stored in `~/.claude/tododo_root` by the installer. Resolve it via Bash before every scan:
+The scanner is installed at a fixed path. Run it directly:
 
 ```bash
-TODODO_ROOT=$(cat ~/.claude/tododo_root)
-python3 "$TODODO_ROOT/scripts/scan_todos.py" .
+python3 ~/.claude/scripts/tododo/scan_todos.py .
 ```
 
 Extended context (for `run` and `explore`):
 
 ```bash
-TODODO_ROOT=$(cat ~/.claude/tododo_root)
-python3 "$TODODO_ROOT/scripts/scan_todos.py" --context 5 .
+python3 ~/.claude/scripts/tododo/scan_todos.py --context 5 .
 ```
 
 The `[N]` index is positional — it resets on every scan run and shifts whenever files are modified. Always re-scan immediately before referencing an ID.
@@ -31,7 +29,7 @@ The `[N]` index is positional — it resets on every scan run and shifts wheneve
 
 Show all TODO comments with their IDs and locations.
 
-1. Run the scanner: `TODODO_ROOT=$(cat ~/.claude/tododo_root) && python3 "$TODODO_ROOT/scripts/scan_todos.py" .`
+1. Run the scanner: `python3 ~/.claude/scripts/tododo/scan_todos.py .`
 2. Display the numbered list
 3. If no TODOs found, report that the codebase is clean
 
@@ -68,7 +66,7 @@ Delete a TODO comment from source code.
 
 Implement what a TODO describes, then remove the comment once done.
 
-1. Scan with extended context: `TODODO_ROOT=$(cat ~/.claude/tododo_root) && python3 "$TODODO_ROOT/scripts/scan_todos.py" --context 5 .`
+1. Scan with extended context: `python3 ~/.claude/scripts/tododo/scan_todos.py --context 5 .`
 2. Determine which TODOs to implement:
    - IDs specified (e.g. `run 1 3`) → work only on those
    - No IDs → display the list and ask the user which ones to execute
@@ -90,7 +88,7 @@ Skip any TODO that is too vague to implement safely; report which were skipped a
 
 Analyze TODOs, ask clarifying questions for vague ones, then rewrite their text with a concrete implementation plan. Use before `run` to make vague TODOs actionable.
 
-1. Scan with `--context 5`: `TODODO_ROOT=$(cat ~/.claude/tododo_root) && python3 "$TODODO_ROOT/scripts/scan_todos.py" --context 5 .`
+1. Scan with `--context 5`: `python3 ~/.claude/scripts/tododo/scan_todos.py --context 5 .`
 2. Select TODOs to explore:
    - IDs provided (e.g. `explore 1 3`) → work only on those
    - No IDs → explore all

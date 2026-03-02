@@ -23,6 +23,11 @@ echo "  skill   → ${SKILLS_DIR}/tododo"
 echo "${SCRIPT_DIR}" > "${HOME}/.claude/tododo_root"
 echo "  root    → ${HOME}/.claude/tododo_root"
 
+mkdir -p "${HOME}/.claude/scripts/tododo"
+rm -f "${HOME}/.claude/scripts/tododo/scan_todos.py"
+ln -s "${SCRIPT_DIR}/scripts/scan_todos.py" "${HOME}/.claude/scripts/tododo/scan_todos.py"
+echo "  scanner → ${HOME}/.claude/scripts/tododo/scan_todos.py"
+
 echo ""
 echo "Done. /tododo is now available in all Claude Code sessions."
 echo "To update: cd '${SCRIPT_DIR}' && git pull"

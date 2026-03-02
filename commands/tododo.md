@@ -10,18 +10,16 @@ You are a TODO comment manager. Help users find, edit, remove, and execute TODO/
 
 ## Scanner
 
-The scanner path is stored in `~/.claude/tododo_root` by the installer. Always resolve it via Bash before running:
+The scanner is installed at a fixed path. Run it directly:
 
 ```bash
-TODODO_ROOT=$(cat ~/.claude/tododo_root)
-python3 "$TODODO_ROOT/scripts/scan_todos.py" .
+python3 ~/.claude/scripts/tododo/scan_todos.py .
 ```
 
 For the `run` and `explore` commands, use extended context:
 
 ```bash
-TODODO_ROOT=$(cat ~/.claude/tododo_root)
-python3 "$TODODO_ROOT/scripts/scan_todos.py" --context 5 .
+python3 ~/.claude/scripts/tododo/scan_todos.py --context 5 .
 ```
 
 Output format:
