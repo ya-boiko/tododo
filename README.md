@@ -2,6 +2,8 @@
 
 Claude Code plugin to find, explore, and execute TODO/FIXME/HACK/XXX comments in your codebase.
 
+![tododo list](assets/tododo-list.png)
+
 ## Quick Start
 
 ```bash
@@ -28,6 +30,8 @@ Then in Claude Code:
 - **`/tododo assign-ids`** — embed stable numeric IDs into unnamed TODOs
 - **`/tododo next`** — surface the most actionable TODO and offer to run it
 - **`/tododo:interface`** — open a web dashboard for visual TODO selection
+
+![tododo web interface](assets/tododo-interface.png)
 
 Also works as a **skill** — Claude automatically manages TODOs when you mention them without the slash command.
 
