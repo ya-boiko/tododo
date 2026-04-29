@@ -6,10 +6,8 @@ Claude Code plugin to find, explore, and execute TODO/FIXME/HACK/XXX comments in
 
 ## Quick Start
 
-```bash
-# Install globally (works in every project)
-git clone https://github.com/ya-boiko/tododo.git ~/.claude-plugins/tododo
-cd ~/.claude-plugins/tododo && ./install.sh
+```
+/plugin install tododo@paperos
 ```
 
 Then in Claude Code:
@@ -49,48 +47,29 @@ list → explore (clarify vague ones) → run or next
 
 ## Installation
 
-### Global (recommended)
+This plugin lives in the `paperos` marketplace.
 
-Install once, available in every project:
-
-```bash
-git clone https://github.com/ya-boiko/tododo.git ~/.claude-plugins/tododo
-cd ~/.claude-plugins/tododo && ./install.sh
+```
+/plugin install tododo@paperos
 ```
 
-### Per-project (git submodule)
+Or set it directly in `~/.claude/settings.json`:
 
-Version the plugin alongside a specific project:
-
-```bash
-git submodule add https://github.com/ya-boiko/tododo.git .claude-plugins/tododo
-cd .claude-plugins/tododo && ./install.sh
-```
-
-For teammates cloning the project:
-
-```bash
-git submodule update --init
-cd .claude-plugins/tododo && ./install.sh
+```json
+"enabledPlugins": { "tododo@paperos": true }
 ```
 
 ## Updating
 
 ```bash
-cd ~/.claude-plugins/tododo && ./update.sh
+cd /path/to/cc_skills && git pull
 ```
 
-For a submodule:
-
-```bash
-git submodule update --remote .claude-plugins/tododo
-```
+The marketplace is a directory source, so `git pull` on the workspace updates all plugins inside.
 
 ## Uninstalling
 
-```bash
-cd ~/.claude-plugins/tododo && ./uninstall.sh
-```
+Set `"tododo@paperos": false` in `~/.claude/settings.json` (or remove the entry).
 
 ## Ignoring Files
 
